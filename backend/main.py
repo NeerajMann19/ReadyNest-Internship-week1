@@ -30,9 +30,19 @@ logger = logging.getLogger("datalens")
 app = FastAPI(title="DataLens API", description="DataLens Dataset Intelligence API", version="1.0")
 
 # Setup CORS to allow React + Vite frontend access
+CORS_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "https://ready-nest-internship-week1.vercel.app"
+]
+
+env_origins = os.environ.get("CORS_ORIGINS")
+if env_origins:
+    CORS_ORIGINS.extend([origin.strip() for origin in env_origins.split(",")])
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

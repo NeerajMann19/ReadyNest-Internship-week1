@@ -238,6 +238,7 @@ const classifyCorrelation = (r) => {
 };
 
 const MAX_UPLOAD_SIZE = 100 * 1024 * 1024; // 100MB
+const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '' : 'https://readynest-internship-week1.onrender.com');
 
 export default function App() {
   // Application State
@@ -312,7 +313,7 @@ export default function App() {
   const fetchHistory = async () => {
     setIsHistoryLoading(true);
     try {
-      const res = await fetch(`/api/datasets?t=${Date.now()}`);
+      const res = await fetch(`${API_BASE_URL}/api/datasets?t=${Date.now()}`);
       if (res.ok) {
         const data = await res.json();
         setHistory(data);
@@ -326,7 +327,7 @@ export default function App() {
 
   const fetchStats = async () => {
     try {
-      const res = await fetch(`/api/datasets/stats?t=${Date.now()}`);
+      const res = await fetch(`${API_BASE_URL}/api/datasets/stats?t=${Date.now()}`);
       if (res.ok) {
         const data = await res.json();
         setHistoryStats(data);
@@ -352,7 +353,7 @@ export default function App() {
     }, 450);
 
     try {
-      const response = await fetch(`/api/datasets/${datasetId}`);
+      const response = await fetch(`${API_BASE_URL}/api/datasets/${datasetId}`);
       clearInterval(stepInterval);
       if (!response.ok) {
         const errData = await response.json();
@@ -386,7 +387,7 @@ export default function App() {
 
   const toggleFavorite = async (datasetId, currentStatus) => {
     try {
-      const res = await fetch(`/api/datasets/${datasetId}/favorite`, {
+      const res = await fetch(`${API_BASE_URL}/api/datasets/${datasetId}/favorite`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ is_favorite: !currentStatus })
@@ -406,7 +407,7 @@ export default function App() {
   const deleteDataset = async (datasetId) => {
     if (!window.confirm('Are you sure you want to soft-delete this dataset? (It will be hidden from history)')) return;
     try {
-      const res = await fetch(`/api/datasets/${datasetId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/datasets/${datasetId}`, {
         method: 'DELETE'
       });
       if (res.ok) {
@@ -535,7 +536,7 @@ export default function App() {
     formData.append('file', file);
 
     try {
-      const response = await fetch('/api/upload', {
+      const response = await fetch(`${API_BASE_URL}/api/upload`, {
         method: 'POST',
         body: formData,
       });
@@ -630,7 +631,7 @@ export default function App() {
     if (!dataset) return;
     setIsCleaning(true);
     try {
-      const response = await fetch('/api/clean', {
+      const response = await fetch(`${API_BASE_URL}/api/clean`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -687,7 +688,7 @@ export default function App() {
       if (currentStep === 3 && dataset && (!statsReport || statsReport.dataset_id !== dataset.dataset_id)) {
         setIsLoadingStats(true);
         try {
-          const response = await fetch('/api/stats', {
+          const response = await fetch(`${API_BASE_URL}/api/stats`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ dataset_id: dataset.dataset_id })
@@ -713,7 +714,7 @@ export default function App() {
       if (currentStep === 4 && dataset && (!univariateReport || univariateReport.dataset_id !== dataset.dataset_id)) {
         setIsLoadingUnivariate(true);
         try {
-          const response = await fetch('/api/univariate', {
+          const response = await fetch(`${API_BASE_URL}/api/univariate`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ dataset_id: dataset.dataset_id })
@@ -743,7 +744,7 @@ export default function App() {
       if ((currentStep === 6 || currentStep === 7) && dataset && (!insightsReport || insightsReport.dataset_id !== dataset.dataset_id)) {
         setIsLoadingInsights(true);
         try {
-          const response = await fetch('/api/insights', {
+          const response = await fetch(`${API_BASE_URL}/api/insights`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ dataset_id: dataset.dataset_id })
@@ -770,7 +771,7 @@ export default function App() {
       if ((currentStep === 5 || currentStep === 7) && dataset && (!bivariateInitData || bivariateInitData.dataset_id !== dataset.dataset_id)) {
         setIsLoadingBivariate(true);
         try {
-          const response = await fetch('/api/bivariate/init', {
+          const response = await fetch(`${API_BASE_URL}/api/bivariate/init`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ dataset_id: dataset.dataset_id })
@@ -838,7 +839,7 @@ export default function App() {
       if (currentStep === 5 && bivariateTab === 'scatter' && dataset && selectedScatterX && selectedScatterY) {
         setIsLoadingScatter(true);
         try {
-          const response = await fetch('/api/bivariate/scatter', {
+          const response = await fetch(`${API_BASE_URL}/api/bivariate/scatter`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -868,7 +869,7 @@ export default function App() {
       if (currentStep === 5 && bivariateTab === 'category' && dataset && selectedCatCol && selectedNumCol && catNumAggregation) {
         setIsLoadingCatNum(true);
         try {
-          const response = await fetch('/api/bivariate/category-numeric', {
+          const response = await fetch(`${API_BASE_URL}/api/bivariate/category-numeric`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -899,7 +900,7 @@ export default function App() {
       if (currentStep === 7 && dataset) {
         setIsLoadingDashboard(true);
         try {
-          const response = await fetch('/api/dashboard/query', {
+          const response = await fetch(`${API_BASE_URL}/api/dashboard/query`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -926,7 +927,7 @@ export default function App() {
     if (!datasetId) return;
     setIsReportsLoading(true);
     try {
-      const res = await fetch(`/api/datasets/${datasetId}/reports?t=${Date.now()}`);
+      const res = await fetch(`${API_BASE_URL}/api/datasets/${datasetId}/reports?t=${Date.now()}`);
       if (res.ok) {
         const data = await res.json();
         setReportsList(data);
@@ -942,7 +943,7 @@ export default function App() {
     if (!dataset) return;
     setIsGeneratingReport(true);
     try {
-      const res = await fetch(`/api/datasets/${dataset.dataset_id}/reports`, {
+      const res = await fetch(`${API_BASE_URL}/api/datasets/${dataset.dataset_id}/reports`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ report_type: reportType })
@@ -966,7 +967,7 @@ export default function App() {
   const handleDeleteReport = async (reportId) => {
     if (!window.confirm('Are you sure you want to delete this report?')) return;
     try {
-      const res = await fetch(`/api/reports/${reportId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/reports/${reportId}`, {
         method: 'DELETE'
       });
       if (res.ok) {
@@ -3511,7 +3512,7 @@ export default function App() {
                               <td className="p-3">
                                 <div className="flex items-center justify-center gap-3">
                                   <a
-                                    href={`/api/reports/${r.report_id}`}
+                                    href={`${API_BASE_URL}/api/reports/${r.report_id}`}
                                     target="_blank"
                                     rel="noreferrer"
                                     className="p-1 rounded text-cyan-400 hover:text-cyan-300 hover:bg-slate-800/60 transition-colors flex items-center gap-1.5"
